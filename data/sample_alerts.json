@@ -1,0 +1,44 @@
+[
+  {
+    "id": "ALRT-10001",
+    "timestamp": "2025-08-12T14:00:00Z",
+    "vendor": "Microsoft Defender",
+    "severity": "High",
+    "detection_type": "Suspicious PowerShell",
+    "src_ip": "192.168.1.20",
+    "dst_ip": "10.0.0.5",
+    "username": "samuel",
+    "geo": "US",
+    "status": "new",
+    "summary": "Encoded PowerShell detected",
+    "tags": ["TI:Suspicious","Geo:NA"]
+  },
+  {
+    "id": "ALRT-10002",
+    "timestamp": "2025-08-12T14:05:00Z",
+    "vendor": "Elastic",
+    "severity": "Medium",
+    "detection_type": "Brute Force",
+    "src_ip": "192.168.2.44",
+    "dst_ip": "10.0.0.9",
+    "username": "svc_app",
+    "geo": "GB",
+    "status": "in_progress",
+    "summary": "Multiple failed logins on SSH",
+    "tags": ["Geo:EMEA"]
+  },
+  {
+    "id": "ALRT-10003",
+    "timestamp": "2025-08-12T14:10:00Z",
+    "vendor": "Splunk",
+    "severity": "Low",
+    "detection_type": "DLP",
+    "src_ip": "192.168.3.10",
+    "dst_ip": "10.0.0.12",
+    "username": "j.doe",
+    "geo": "CA",
+    "status": "closed",
+    "summary": "Unusual file movement flagged",
+    "tags": ["Geo:NA"]
+  }
+]
