@@ -2,25 +2,9 @@
 
 
 
-A lightweight dashboard that aggregates and visualizes security alerts from multiple SIEM sources (e.g., Microsoft Defender, Elastic, Splunk).  
+A centralized dashboard for viewing, filtering, and analyzing SIEM alerts from multiple sources such as Microsoft Defender, Elastic, and Splunk.  
 
-Built with \*\*FastAPI\*\* for the backend and \*\*Bootstrap + Chart.js\*\* for the frontend.
-
-
-
----
-
-
-
-\## Features
-
-\- Filterable alert feed by vendor, severity, status, and keywords
-
-\- Summary KPIs for total alerts, top severity, and top vendor
-
-\- Charts: Alerts by Severity (doughnut) \& Vendor (bar)
-
-\- Simple HTML frontend (no build tools needed)
+Built as part of a cybersecurity project portfolio.
 
 
 
@@ -28,13 +12,17 @@ Built with \*\*FastAPI\*\* for the backend and \*\*Bootstrap + Chart.js\*\* for 
 
 
 
-\## Tech Stack
+\## 📌 Overview
 
-\*\*Backend:\*\* Python (FastAPI, Uvicorn)  
+The SIEM Alert Dashboard provides:
 
-\*\*Frontend:\*\* HTML, Bootstrap, Chart.js  
+\- A backend API (FastAPI) to serve alert data
 
-\*\*Data:\*\* Static JSON (demo), replaceable with live SIEM API
+\- A simple HTML + Bootstrap + Chart.js frontend
+
+\- Filtering by vendor, severity, status, and keywords
+
+\- Summary metrics and charts for quick analysis
 
 
 
@@ -42,19 +30,67 @@ Built with \*\*FastAPI\*\* for the backend and \*\*Bootstrap + Chart.js\*\* for 
 
 
 
-\## Getting Started
+\## 📂 Project Structure
 
-1\. \*\*Clone the repo\*\*
+siem-alert-dashboard/
 
-&nbsp;  ```bash
+├── backend/ # FastAPI application
 
-&nbsp;  git clone https://github.com/<your-username>/siem-alert-dashboard.git
+│ └── app.py
 
-&nbsp;  cd siem-alert-dashboard
+├── data/ # Sample alert data (JSON)
 
-Set up Python environment
+│ └── sample\_alerts.json
+
+├── frontend/ # HTML dashboard
+
+│ └── index.html
+
+├── requirements.txt # Python dependencies
+
+└── README.md
 
 
+
+yaml
+
+Copy
+
+Edit
+
+
+
+---
+
+
+
+\## ⚙️ Tech Stack
+
+\*\*Backend:\*\* Python, FastAPI, Uvicorn  
+
+\*\*Frontend:\*\* HTML, Bootstrap 5, Chart.js  
+
+\*\*Data:\*\* Static JSON (replaceable with live SIEM API feeds)
+
+
+
+---
+
+
+
+\## 🚀 Getting Started
+
+
+
+\### 1. Clone the Repository
+
+```bash
+
+git clone https://github.com/<your-username>/siem-alert-dashboard.git
+
+cd siem-alert-dashboard
+
+2\. Set Up Virtual Environment
 
 bash
 
@@ -64,13 +100,21 @@ Edit
 
 python -m venv venv
 
-venv\\Scripts\\activate
+venv\\Scripts\\activate   # Windows
+
+\# or: source venv/bin/activate  # Mac/Linux
+
+3\. Install Dependencies
+
+bash
+
+Copy
+
+Edit
 
 pip install -r requirements.txt
 
-Run backend API
-
-
+4\. Run the Backend
 
 bash
 
@@ -82,25 +126,21 @@ cd backend
 
 python -m uvicorn app:app --reload --port 8000
 
-Test:
+API Health Check: http://127.0.0.1:8000/health
 
 
 
-http://127.0.0.1:8000/health
+Alerts Endpoint: http://127.0.0.1:8000/alerts
 
 
 
-http://127.0.0.1:8000/alerts
+Summary Endpoint: http://127.0.0.1:8000/summary
 
 
 
-http://127.0.0.1:8000/summary
+5\. Open the Frontend
 
-
-
-Open frontend
-
-With API running, open:
+With the API running, open:
 
 
 
@@ -112,25 +152,81 @@ Edit
 
 frontend/index.html
 
-API Endpoints
+📊 API Endpoints
 
-GET /health – API status
+GET /health
 
-
-
-GET /alerts – List alerts with filters:
-
-vendor, severity, status, q (search text)
+Returns API status:
 
 
 
-GET /summary – Returns alert counts by severity and vendor
+json
+
+Copy
+
+Edit
+
+{"ok": true}
+
+GET /alerts
+
+Returns alert list with optional filters:
 
 
 
-Roadmap
+vendor
 
-Export alerts to CSV
+
+
+severity
+
+
+
+status
+
+
+
+q (search in summary, username, tags)
+
+
+
+Example:
+
+
+
+bash
+
+Copy
+
+Edit
+
+/alerts?vendor=Elastic\&severity=High
+
+GET /summary
+
+Returns:
+
+
+
+json
+
+Copy
+
+Edit
+
+{
+
+&nbsp; "total": 3,
+
+&nbsp; "by\_severity": { "High": 1, "Medium": 1, "Low": 1 },
+
+&nbsp; "by\_vendor": { "Microsoft Defender": 1, "Elastic": 1, "Splunk": 1 }
+
+}
+
+🔮 Future Improvements
+
+CSV export for filtered alerts
 
 
 
@@ -139,4 +235,12 @@ Role-based views (Analyst / Manager)
 
 
 Live WebSocket updates
+
+
+
+GeoIP map for source IPs
+
+
+
+
 
