@@ -4,9 +4,7 @@
   <meta charset="utf-8" />
   <title>SIEM Alert Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Bootstrap (for quick layout) -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     body { padding: 20px; }
@@ -23,7 +21,7 @@
     <!-- Filters -->
     <div class="row g-2 mb-3">
       <div class="col-12 col-md-2">
-        <select id="vendor" class="form-select">
+        <select id="vendor" class="form-select" aria-label="Filter by Vendor">
           <option value="">Vendor: All</option>
           <option>Microsoft Defender</option>
           <option>Elastic</option>
@@ -31,7 +29,15 @@
         </select>
       </div>
       <div class="col-12 col-md-2">
-        <select id="severity" class="form-select">
+        <select id="detection_type" class="form-select" aria-label="Filter by Detection Type">
+          <option value="">Detection: All</option>
+          <option>Suspicious PowerShell</option>
+          <option>Brute Force</option>
+          <option>DLP</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-2">
+        <select id="severity" class="form-select" aria-label="Filter by Severity">
           <option value="">Severity: All</option>
           <option>Low</option>
           <option>Medium</option>
@@ -40,73 +46,72 @@
         </select>
       </div>
       <div class="col-12 col-md-2">
-        <select id="status" class="form-select">
+        <select id="status" class="form-select" aria-label="Filter by Status">
           <option value="">Status: All</option>
           <option>new</option>
           <option>in_progress</option>
           <option>closed</option>
         </select>
       </div>
-      <div class="col-12 col-md-3">
-        <input id="q" class="form-control" placeholder="Search summary/user/tags…" />
+      <div class="col-12 col-md-2">
+        <input id="q" class="form-control" placeholder="Search summary/user/tags…" aria-label="Free text search" />
       </div>
-      <div class="col-12 col-md-3 d-grid">
-        <button id="apply" class="btn btn-primary">Apply Filters</button>
+      <div class="col-6 col-md-1 d-grid">
+        <button id="apply" class="btn btn-primary">Apply</button>
+      </div>
+      <div class="col-6 col-md-1 d-grid">
+        <button id="export" class="btn btn-outline-secondary">Export</button>
+      </div>
+      <div class="col-12 col-md-2 d-grid">
+        <button id="reset" class="btn btn-light">Reset</button>
       </div>
     </div>
 
     <!-- KPI cards -->
     <div class="row g-3 mb-3">
       <div class="col-12 col-md-4">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <div class="text-muted small">Total Alerts</div>
-            <div id="kpi-total" class="h3 mb-0">—</div>
-          </div>
-        </div>
+        <div class="card shadow-sm"><div class="card-body">
+          <div class="text-muted small">Total Alerts</div>
+          <div id="kpi-total" class="h3 mb-0">—</div>
+        </div></div>
       </div>
       <div class="col-12 col-md-4">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <div class="text-muted small">Top Severity</div>
-            <div id="kpi-top-sev" class="h3 mb-0">—</div>
-          </div>
-        </div>
+        <div class="card shadow-sm"><div class="card-body">
+          <div class="text-muted small">Top Severity</div>
+          <div id="kpi-top-sev" class="h3 mb-0">—</div>
+        </div></div>
       </div>
       <div class="col-12 col-md-4">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <div class="text-muted small">Top Vendor</div>
-            <div id="kpi-top-vendor" class="h3 mb-0">—</div>
-          </div>
-        </div>
+        <div class="card shadow-sm"><div class="card-body">
+          <div class="text-muted small">Top Vendor</div>
+          <div id="kpi-top-vendor" class="h3 mb-0">—</div>
+        </div></div>
       </div>
     </div>
 
     <!-- Charts -->
     <div class="row g-3 mb-4">
       <div class="col-12 col-lg-6">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h6 class="card-title">Alerts by Severity</h6>
-            <canvas id="sevChart" height="220"></canvas>
-          </div>
-        </div>
+        <div class="card shadow-sm"><div class="card-body">
+          <h6 class="card-title">Alerts by Severity</h6>
+          <canvas id="sevChart" height="220"></canvas>
+        </div></div>
       </div>
       <div class="col-12 col-lg-6">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h6 class="card-title">Alerts by Vendor</h6>
-            <canvas id="vendorChart" height="220"></canvas>
-          </div>
-        </div>
+        <div class="card shadow-sm"><div class="card-body">
+          <h6 class="card-title">Alerts by Vendor</h6>
+          <canvas id="vendorChart" height="220"></canvas>
+        </div></div>
       </div>
     </div>
 
     <!-- Table -->
     <div class="card shadow-sm">
       <div class="card-body">
-        <h6 class="card-title">Alert Feed</h6>
+        <h6 class="card-title d-flex align-items-center gap-2">
+          Alert Feed
+          <span id="result-count" class="badge bg-dark">0</span>
+        </h6>
         <div class="table-wrap">
           <table class="table table-sm align-middle">
             <thead class="table-light sticky-top">
@@ -131,10 +136,14 @@ const els = {
   kpiTopVendor: document.getElementById("kpi-top-vendor"),
   rows: document.getElementById("rows"),
   vendor: document.getElementById("vendor"),
+  detection: document.getElementById("detection_type"),
   severity: document.getElementById("severity"),
   status: document.getElementById("status"),
   q: document.getElementById("q"),
-  apply: document.getElementById("apply")
+  apply: document.getElementById("apply"),
+  exportBtn: document.getElementById("export"),
+  reset: document.getElementById("reset"),
+  resultCount: document.getElementById("result-count")
 };
 
 let sevChart, vendorChart;
@@ -159,7 +168,6 @@ async function loadSummary(){
   const vendorLabels = Object.keys(j.by_vendor||{});
   const vendorValues = Object.values(j.by_vendor||{});
 
-  // severity chart
   if (sevChart) sevChart.destroy();
   sevChart = new Chart(document.getElementById("sevChart"), {
     type: "doughnut",
@@ -167,7 +175,6 @@ async function loadSummary(){
     options: { plugins: { legend: { position: "bottom" } } }
   });
 
-  // vendor chart
   if (vendorChart) vendorChart.destroy();
   vendorChart = new Chart(document.getElementById("vendorChart"), {
     type: "bar",
@@ -179,29 +186,29 @@ async function loadSummary(){
   });
 }
 
-function badge(text, cls){
-  return `<span class="badge bg-${cls}">${text}</span>`;
-}
+function badge(text, cls){ return `<span class="badge bg-${cls}">${text}</span>`; }
+function sevBadge(sev){ const m={Low:"secondary",Medium:"info",High:"warning",Critical:"danger"}; return badge(sev,m[sev]||"secondary"); }
+function statusBadge(s){ const m={new:"primary",in_progress:"warning",closed:"success"}; return badge(s,m[s]||"secondary"); }
 
-function sevBadge(sev){
-  const map = { Low: "secondary", Medium: "info", High: "warning", Critical: "danger" };
-  return badge(sev, map[sev] || "secondary");
-}
-
-function statusBadge(s){
-  const map = { new: "primary", in_progress: "warning", closed: "success" };
-  return badge(s, map[s] || "secondary");
+function currentParams(){
+  const p = new URLSearchParams();
+  if (els.vendor.value) p.set("vendor", els.vendor.value);
+  if (els.detection.value) p.set("detection_type", els.detection.value);
+  if (els.severity.value) p.set("severity", els.severity.value);
+  if (els.status.value) p.set("status", els.status.value);
+  if (els.q.value) p.set("q", els.q.value);
+  return p.toString();
 }
 
 async function loadAlerts(){
-  const params = new URLSearchParams();
-  if (els.vendor.value) params.set("vendor", els.vendor.value);
-  if (els.severity.value) params.set("severity", els.severity.value);
-  if (els.status.value) params.set("status", els.status.value);
-  if (els.q.value) params.set("q", els.q.value);
-
-  const r = await fetch(`${API}/alerts?${params.toString()}`);
+  const r = await fetch(`${API}/alerts?${currentParams()}`);
   const j = await r.json();
+
+  els.resultCount.textContent = j.length;
+  if (!j.length){
+    els.rows.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">No results for current filters</td></tr>`;
+    return;
+  }
 
   els.rows.innerHTML = j.map(a => `
     <tr>
@@ -217,11 +224,31 @@ async function loadAlerts(){
   `).join("");
 }
 
+function resetFilters(){
+  els.vendor.value = "";
+  els.detection.value = "";
+  els.severity.value = "";
+  els.status.value = "";
+  els.q.value = "";
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
   await loadSummary();
   await loadAlerts();
-  els.apply.addEventListener("click", async () => {
+
+  els.apply.addEventListener("click", loadAlerts);
+  els.exportBtn.addEventListener("click", () => {
+    const qs = currentParams();
+    window.location.href = `${API}/export?${qs}`;
+  });
+  els.reset.addEventListener("click", async () => {
+    resetFilters();
     await loadAlerts();
+  });
+
+  // Press Enter in search box to apply
+  els.q.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); loadAlerts(); }
   });
 });
 </script>
