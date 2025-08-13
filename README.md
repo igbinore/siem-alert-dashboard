@@ -14,17 +14,11 @@ It provides quick insights into alerts, severity levels, vendor distribution, an
 ---
 
 ## 📸 Screenshots
+**Manager View**  
+![Manager View](screenshots/manager_view.png)  
 
-### Dashboard Overview
-![SIEM Dashboard Screenshot](screenshots/dashboard_view.png)
-
-### Manager View
-Provides a high-level overview of alerts, KPIs, and trends for executive and managerial decision-making.
-![Manager View](screenshots/manager_view.png)
-
-### Analyst View
-Focuses on detailed alert feeds, search, and filtering for day-to-day SOC analysis and investigation.
-![Analyst View](screenshots/analyst_view.png)
+**Analyst View**  
+![Analyst View](screenshots/analyst_view.png)  
 
 ---
 
@@ -43,6 +37,7 @@ source venv/bin/activate  # Linux/Mac
 # Install dependencies
 pip install -r requirements.txt
 ▶️ Running the App
+Option 1: Manual Run
 Backend
 
 bash
@@ -53,13 +48,27 @@ python -m uvicorn app:app --reload --port 8000
 Frontend
 Simply open frontend/index.html in your browser.
 
+Option 2: One-Click Launch (Windows)
+If you’re on Windows, you can use the provided run_dashboard.bat file for a one-click startup:
+
+Double-click run_dashboard.bat.
+
+This will:
+
+Activate your Python virtual environment
+
+Start the FastAPI backend on http://127.0.0.1:8000
+
+Open the dashboard in your default browser
+
 📂 Project Structure
-plaintext
+pgsql
 Copy
 Edit
 siem-alert-dashboard/
 │   README.md
 │   requirements.txt
+│   run_dashboard.bat
 │
 ├── backend/
 │   └── app.py
@@ -71,7 +80,6 @@ siem-alert-dashboard/
 │   └── sample_alerts.json
 │
 └── screenshots/
-    ├── dashboard_view.png
     ├── manager_view.png
     └── analyst_view.png
 👨‍💻 Technologies Used
